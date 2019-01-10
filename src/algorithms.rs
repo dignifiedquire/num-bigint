@@ -4,18 +4,16 @@ use std::cmp::Ordering::{self, Equal, Greater, Less};
 use std::iter::repeat;
 use std::mem;
 use traits;
-use traits::{One, Zero};
-
+use traits::{One, Zero, Signed};
 use biguint::BigUint;
-
 use bigint::BigInt;
 use bigint::Sign;
 use bigint::Sign::{Minus, NoSign, Plus};
-
 use big_digit::{self, BigDigit, DoubleBigDigit, SignedDoubleBigDigit};
-
-use super::super::VEC_SIZE;
+use crate::VEC_SIZE;
 use smallvec::SmallVec;
+use integer::Integer;
+
 
 // Generic functions for add/subtract/multiply with carry/borrow:
 
@@ -691,12 +689,125 @@ pub fn cmp_slice(a: &[BigDigit], b: &[BigDigit]) -> Ordering {
     return Equal;
 }
 
+
+
+// Few Functions taken from
+// https://github.com/RustCrypto/RSA/blob/master/src/math.rs
+
+
+/// Jacobi returns the Jacobi symbol (x/y), either +1, -1, or 0.
+/// The y argument must be an odd integer.
+pub fn jacobi(x: &BigInt, y: &BigInt) -> isize {
+    if !y.is_odd() {
+        panic!(
+            "invalid arguments, y must be an odd integer,but got {:?}",
+            y
+        );
+    }
+
+    let mut a = x.clone();
+    let mut b = y.clone();
+    let mut j = 1;
+
+    if b.is_negative() {
+        if a.is_negative() {
+            j = -1;
+        }
+        b = -b;
+    }
+
+    loop {
+        if b.is_one() {
+            return j;
+        }
+        if a.is_zero() {
+            return 0;
+        }
+
+        a = a.mod_floor(&b);
+        if a.is_zero() {
+            return 0;
+        }
+
+        // a > 0
+
+        // handle factors of 2 in a
+        let s = a.trailing_zeros().unwrap();
+        if s & 1 != 0 {
+            let bmod8 = b.get_limb(0) & 7;
+            if bmod8 == 3 || bmod8 == 5 {
+                j = -j;
+            }
+        }
+
+        let c = &a >> s; // a = 2^s*c
+
+        // swap numerator and denominator
+        if b.get_limb(0) & 3 == 3 && c.get_limb(0) & 3 == 3 {
+            j = -j
+        }
+
+        a = b;
+        b = c.clone();
+    }
+}
+
+
+
+/// Calculates the extended eucledian algorithm.
+/// See https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm for details.
+/// The returned values are
+/// - greatest common divisor (1)
+/// - Bezout coefficients (2)
+// TODO: implement optimized variants
+pub fn extended_gcd(a: &BigUint, b: &BigUint) -> (BigInt, BigInt, BigInt) {
+    let mut a = BigInt::from_biguint(Plus, a.clone());
+    let mut b = BigInt::from_biguint(Plus, b.clone());
+
+    let mut ua = BigInt::one();
+    let mut va = BigInt::zero();
+
+    let mut ub = BigInt::zero();
+    let mut vb = BigInt::one();
+
+    let mut q;
+    let mut tmp;
+    let mut r;
+
+    while !b.is_zero() {
+        q = &a / &b;
+        r = &a % &b;
+
+        a = b;
+        b = r;
+
+        tmp = ua;
+        ua = ub.clone();
+        ub = tmp - &q * &ub;
+
+        tmp = va;
+        va = vb.clone();
+        vb = tmp - &q * &vb;
+    }
+
+    (a, ua, va)
+}
+
+
+
+
+
+
 #[cfg(test)]
 mod algorithm_tests {
     use big_digit::BigDigit;
     use traits::Num;
+    use traits::FromPrimitive;
     use Sign::Plus;
     use {BigInt, BigUint};
+    use algorithms::{extended_gcd, jacobi};
+    use rand::{thread_rng};
+    use bigrand::RandBigInt;
 
     #[test]
     fn test_sub_sign() {
@@ -731,4 +842,62 @@ mod algorithm_tests {
         assert!(&a != &b);
         assert_ne!(&a, &b);
     }
+
+      #[test]
+    fn test_extended_gcd_example() {
+        // simple example for wikipedia
+        let a = BigUint::from_u32(240).unwrap();
+        let b = BigUint::from_u32(46).unwrap();
+        let (q, s_k, t_k) = extended_gcd(&a, &b);
+
+        assert_eq!(q, BigInt::from_i32(2).unwrap());
+        assert_eq!(s_k, BigInt::from_i32(-9).unwrap());
+        assert_eq!(t_k, BigInt::from_i32(47).unwrap());
+    }
+
+    #[test]
+    fn test_extended_gcd_assumptions() {
+        let mut rng = thread_rng();
+
+        for i in 1..100 {
+            let a = rng.gen_biguint(i * 128);
+            let b = rng.gen_biguint(i * 128);
+            let (q, s_k, t_k) = extended_gcd(&a, &b);
+
+            let lhs = BigInt::from_biguint(Plus, a) * &s_k;
+            let rhs = BigInt::from_biguint(Plus, b) * &t_k;
+            assert_eq!(q, lhs + &rhs);
+        }
+    }
+
+    #[test]
+    fn test_jacobi() {
+        let cases = [
+            [0, 1, 1],
+            [0, -1, 1],
+            [1, 1, 1],
+            [1, -1, 1],
+            [0, 5, 0],
+            [1, 5, 1],
+            [2, 5, -1],
+            [-2, 5, -1],
+            [2, -5, -1],
+            [-2, -5, 1],
+            [3, 5, -1],
+            [5, 5, 0],
+            [-5, 5, 0],
+            [6, 5, 1],
+            [6, -5, 1],
+            [-6, 5, 1],
+            [-6, -5, -1],
+        ];
+
+        for case in cases.iter() {
+            let x = BigInt::from_i64(case[0]).unwrap();
+            let y = BigInt::from_i64(case[1]).unwrap();
+
+            assert_eq!(case[2] as isize, jacobi(&x, &y), "jacobi({}, {})", x, y);
+        }
+    }
+
 }

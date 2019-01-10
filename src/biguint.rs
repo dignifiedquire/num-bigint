@@ -28,15 +28,14 @@ use big_digit::{self, BigDigit};
 
 use smallvec::SmallVec;
 
-#[path = "algorithms.rs"]
-mod algorithms;
+
 #[path = "monty.rs"]
 mod monty;
 
-use self::algorithms::{__add2, __sub2rev, add2, sub2, sub2rev};
-use self::algorithms::{biguint_shl, biguint_shr};
-use self::algorithms::{cmp_slice, fls, ilog2};
-use self::algorithms::{div_rem, div_rem_digit, mac_with_carry, mul3, scalar_mul};
+use crate::algorithms::{__add2, __sub2rev, add2, sub2, sub2rev};
+use crate::algorithms::{biguint_shl, biguint_shr};
+use crate::algorithms::{cmp_slice, fls, ilog2};
+use crate::algorithms::{div_rem, div_rem_digit, mac_with_carry, mul3, scalar_mul};
 use self::monty::monty_modpow;
 use super::VEC_SIZE;
 
@@ -2263,7 +2262,7 @@ impl BigUint {
     /// Strips off trailing zero bigdigits - comparisons require the last element in the vector to
     /// be nonzero.
     #[inline]
-    fn normalize(&mut self) {
+    pub(crate) fn normalize(&mut self) {
         while let Some(&0) = self.data.last() {
             self.data.pop();
         }
@@ -2271,7 +2270,7 @@ impl BigUint {
 
     /// Returns a normalized `BigUint`.
     #[inline]
-    fn normalized(mut self) -> BigUint {
+    pub(crate) fn normalized(mut self) -> BigUint {
         self.normalize();
         self
     }
