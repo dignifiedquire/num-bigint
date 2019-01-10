@@ -13,7 +13,7 @@ readme = "README.md"
 build = "build.rs"
 
 [package.metadata.docs.rs]
-features = ["std", "serde", "rand"]
+features = ["std", "serde", "rand", "prime"]
 
 [[bench]]
 name = "bigint"
@@ -37,8 +37,8 @@ version = "0.1.39"
 default-features = false
 
 [dependencies.num-traits]
-git = "https://github.com/stichtingorganism/num-traits" 
-# version = "0.2.4"
+# git = "https://github.com/stichtingorganism/num-traits" 
+version = "0.2.4"
 default-features = false
 
 [dependencies.num-iter]
@@ -73,3 +73,4 @@ default = ["std", "i128", "u64_digit"]
 i128 = ["num-integer/i128", "num-traits/i128"]
 std = ["num-integer/std", "num-traits/std", "smallvec/std"]
 u64_digit = []
+prime = ["rand"]

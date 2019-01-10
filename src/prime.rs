@@ -5,15 +5,12 @@ use byteorder::{BigEndian, ByteOrder};
 use Sign::Plus;
 use BigInt;
 use BigUint;
-use RandBigInt;
 use integer::Integer;
-use traits::{FromPrimitive, One, ToPrimitive, Zero};
+use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
 use rand::SeedableRng;
 use rand::rngs::StdRng;
-
-
 use crate::algorithms::jacobi;
-
+use bigrand::RandBigInt;
 
 lazy_static! {
     pub(crate) static ref BIG_1: BigUint = BigUint::one();
@@ -370,6 +367,7 @@ fn get_bit(x: &BigUint, i: usize) -> u8 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    // use RandBigInt;
 
     lazy_static! {
         static ref PRIMES: Vec<&'static str> = vec![

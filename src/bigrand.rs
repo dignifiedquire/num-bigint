@@ -3,6 +3,7 @@
 use rand::distributions::uniform::{SampleUniform, UniformSampler};
 use rand::prelude::*;
 use rand::AsByteSliceMut;
+use rand::Rng;
 
 use BigInt;
 use BigUint;
@@ -11,7 +12,7 @@ use Sign::*;
 use big_digit::BigDigit;
 use bigint::{into_magnitude, magnitude};
 use num_iter::range_step;
-use traits::{FromPrimitive, ToPrimitive};
+use num_traits::{FromPrimitive, ToPrimitive};
 use integer::Integer;
 use traits::Zero;
 
@@ -235,7 +236,7 @@ impl Distribution<BigInt> for RandomBits {
 /// extern crate num_bigint_dig as num_bigint;
 ///
 /// use rand::thread_rng;
-/// use num_bigint::bigrand::RandPrime;
+/// use num_bigint::RandPrime;
 ///
 /// let mut rng = thread_rng();
 /// let p = rng.gen_prime(1024);

@@ -82,17 +82,21 @@
 
 #[cfg(feature = "rand")]
 extern crate rand;
+
 #[cfg(feature = "serde")]
 extern crate serde;
 
 #[macro_use]
 extern crate smallvec;
 
+#[cfg(feature = "prime")]
 #[macro_use] extern crate lazy_static;
 
 extern crate num_integer as integer;
-extern crate num_traits as traits;
+extern crate num_traits;
 extern crate num_iter;
+
+#[cfg(feature = "prime")]
 extern crate byteorder;
 
 use std::error::Error;
@@ -104,7 +108,10 @@ mod macros;
 mod bigint;
 mod biguint;
 
+#[cfg(feature = "prime")]
 pub mod prime;
+
+pub mod traits;
 pub mod algorithms;
 
 #[cfg(feature = "rand")]

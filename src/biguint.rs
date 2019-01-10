@@ -19,7 +19,8 @@ use std::{u64, u8};
 use serde;
 
 use integer::{Integer, Roots};
-use traits::{
+use BigInt;
+use num_traits::{
     CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, Float, FromPrimitive, Num, One, Pow,
     ToPrimitive, Unsigned, Zero,
 };
@@ -27,12 +28,13 @@ use traits::{
 use big_digit::{self, BigDigit};
 
 use smallvec::SmallVec;
-
+use traits::ModInverse;
+use bigint::Sign::Plus;
 
 #[path = "monty.rs"]
 mod monty;
 
-use crate::algorithms::{__add2, __sub2rev, add2, sub2, sub2rev};
+use crate::algorithms::{__add2, __sub2rev, add2, sub2, sub2rev, mod_inverse};
 use crate::algorithms::{biguint_shl, biguint_shr};
 use crate::algorithms::{cmp_slice, fls, ilog2};
 use crate::algorithms::{div_rem, div_rem_digit, mac_with_carry, mul3, scalar_mul};
@@ -3131,5 +3133,33 @@ fn test_u128_u32_roundtrip() {
     for val in &values {
         let (a, b, c, d) = u32_from_u128(*val);
         assert_eq!(u32_to_u128(a, b, c, d), *val);
+    }
+}
+
+
+// Mod Inverse
+
+
+impl<'a> ModInverse<&'a BigUint> for BigUint {
+    fn mod_inverse(self, m: &'a BigUint) -> Option<BigUint> {
+        match mod_inverse(
+            Cow::Owned(BigInt::from_biguint(Plus, self)),
+            &BigInt::from_biguint(Plus, m.clone()),
+        ) {
+            Some(res) => res.to_biguint(),
+            None => None,
+        }
+    }
+}
+
+impl ModInverse<BigUint> for BigUint {
+    fn mod_inverse(self, m: BigUint) -> Option<BigUint> {
+        match mod_inverse(
+            Cow::Owned(BigInt::from_biguint(Plus, self)),
+            &BigInt::from_biguint(Plus, m),
+        ) {
+            Some(res) => res.to_biguint(),
+            None => None,
+        }
     }
 }

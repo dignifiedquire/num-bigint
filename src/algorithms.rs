@@ -3,8 +3,8 @@ use std::cmp;
 use std::cmp::Ordering::{self, Equal, Greater, Less};
 use std::iter::repeat;
 use std::mem;
-use traits;
-use traits::{One, Zero, Signed};
+use num_traits;
+use num_traits::{One, Zero, Signed};
 use biguint::BigUint;
 use bigint::BigInt;
 use bigint::Sign;
@@ -604,11 +604,11 @@ pub fn div_rem(u: &BigUint, d: &BigUint) -> (BigUint, BigUint) {
 
 /// Find last set bit
 /// fls(0) == 0, fls(u32::MAX) == 32
-pub fn fls<T: traits::PrimInt>(v: T) -> usize {
+pub fn fls<T: num_traits::PrimInt>(v: T) -> usize {
     mem::size_of::<T>() * 8 - v.leading_zeros() as usize
 }
 
-pub fn ilog2<T: traits::PrimInt>(v: T) -> usize {
+pub fn ilog2<T: num_traits::PrimInt>(v: T) -> usize {
     fls(v) - 1
 }
 
@@ -794,20 +794,48 @@ pub fn extended_gcd(a: &BigUint, b: &BigUint) -> (BigInt, BigInt, BigInt) {
 }
 
 
+/// Calculate the modular inverse of `a`.
+/// Implemenation is based on the naive version from wikipedia.
+#[inline]
+pub fn mod_inverse(g: Cow<BigInt>, n: &BigInt) -> Option<BigInt> {
+    assert!(g.as_ref() != n, "g must not be equal to n");
+    assert!(!n.is_negative(), "negative modulus not supported");
+
+    let n = n.abs();
+    let g = if g.is_negative() {
+        g.mod_floor(&n).to_biguint().unwrap()
+    } else {
+        g.to_biguint().unwrap()
+    };
+
+    let (d, x, _) = extended_gcd(&g, &n.to_biguint().unwrap());
+
+    if !d.is_one() {
+        return None;
+    }
+
+    if x.is_negative() {
+        Some(x + n)
+    } else {
+        Some(x)
+    }
+}
 
 
 
 
 #[cfg(test)]
 mod algorithm_tests {
+    // extern crate rand;
+
     use big_digit::BigDigit;
-    use traits::Num;
-    use traits::FromPrimitive;
+    use num_traits::Num;
+    use num_traits::{FromPrimitive, One};
     use Sign::Plus;
     use {BigInt, BigUint};
     use algorithms::{extended_gcd, jacobi};
-    use rand::{thread_rng};
-    use bigrand::RandBigInt;
+    use traits::ModInverse;
+    use integer::Integer;
 
     #[test]
     fn test_sub_sign() {
@@ -843,7 +871,7 @@ mod algorithm_tests {
         assert_ne!(&a, &b);
     }
 
-      #[test]
+    #[test]
     fn test_extended_gcd_example() {
         // simple example for wikipedia
         let a = BigUint::from_u32(240).unwrap();
@@ -855,20 +883,7 @@ mod algorithm_tests {
         assert_eq!(t_k, BigInt::from_i32(47).unwrap());
     }
 
-    #[test]
-    fn test_extended_gcd_assumptions() {
-        let mut rng = thread_rng();
 
-        for i in 1..100 {
-            let a = rng.gen_biguint(i * 128);
-            let b = rng.gen_biguint(i * 128);
-            let (q, s_k, t_k) = extended_gcd(&a, &b);
-
-            let lhs = BigInt::from_biguint(Plus, a) * &s_k;
-            let rhs = BigInt::from_biguint(Plus, b) * &t_k;
-            assert_eq!(q, lhs + &rhs);
-        }
-    }
 
     #[test]
     fn test_jacobi() {
@@ -897,6 +912,95 @@ mod algorithm_tests {
             let y = BigInt::from_i64(case[1]).unwrap();
 
             assert_eq!(case[2] as isize, jacobi(&x, &y), "jacobi({}, {})", x, y);
+        }
+    }
+
+
+
+    #[test]
+    fn test_mod_inverse() {
+        let tests = [
+            ["1234567", "458948883992"],
+	    ["239487239847", "2410312426921032588552076022197566074856950548502459942654116941958108831682612228890093858261341614673227141477904012196503648957050582631942730706805009223062734745341073406696246014589361659774041027169249453200378729434170325843778659198143763193776859869524088940195577346119843545301547043747207749969763750084308926339295559968882457872412993810129130294592999947926365264059284647209730384947211681434464714438488520940127459844288859336526896320919633919"],
+	    ["-10", "13"],
+            ["-6193420858199668535", "2881"],
+        ];
+
+        for test in &tests {
+            let element = BigInt::parse_bytes(test[0].as_bytes(), 10).unwrap();
+            let modulus = BigInt::parse_bytes(test[1].as_bytes(), 10).unwrap();
+
+            println!("{} modinv {}", element, modulus);
+            let inverse = element.clone().mod_inverse(&modulus).unwrap();
+            println!("inverse: {}", &inverse);
+            let cmp = (inverse * &element).mod_floor(&modulus);
+
+            assert_eq!(
+                cmp,
+                BigInt::one(),
+                "mod_inverse({}, {}) * {} % {} = {}, not 1",
+                &element,
+                &modulus,
+                &element,
+                &modulus,
+                &cmp
+            );
+        }
+
+        // exhaustive tests for small numbers
+        for n in 2..100 {
+            let modulus = BigInt::from_u64(n).unwrap();
+            for x in 1..n {
+                for sign in vec![1i64, -1i64] {
+                    let element = BigInt::from_i64(sign * x as i64).unwrap();
+                    let gcd = element.gcd(&modulus);
+
+                    if !gcd.is_one() {
+                        continue;
+                    }
+
+                    let inverse = element.clone().mod_inverse(&modulus).unwrap();
+                    let cmp = (&inverse * &element).mod_floor(&modulus);
+                    println!("inverse: {}", &inverse);
+                    assert_eq!(
+                        cmp,
+                        BigInt::one(),
+                        "mod_inverse({}, {}) * {} % {} = {}, not 1",
+                        &element,
+                        &modulus,
+                        &element,
+                        &modulus,
+                        &cmp
+                    );
+                }
+            }
+        }
+    }
+
+}
+
+
+#[cfg(feature = "prime")]
+mod random_prime_tests {
+    use rand::thread_rng;
+    use bigrand::RandBigInt;
+    use algorithms::extended_gcd;
+    use BigInt;
+    use Sign::Plus;
+
+
+    #[test]
+    fn test_extended_gcd_assumptions() {
+        let mut rng = thread_rng();
+
+        for i in 1..100 {
+            let a = rng.gen_biguint(i * 128);
+            let b = rng.gen_biguint(i * 128);
+            let (q, s_k, t_k) = extended_gcd(&a, &b);
+
+            let lhs = BigInt::from_biguint(Plus, a) * &s_k;
+            let rhs = BigInt::from_biguint(Plus, b) * &t_k;
+            assert_eq!(q, lhs + &rhs);
         }
     }
 
