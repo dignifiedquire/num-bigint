@@ -14,7 +14,7 @@ use bigint::{into_magnitude, magnitude};
 use num_iter::range_step;
 use num_traits::{FromPrimitive, ToPrimitive};
 use integer::Integer;
-use traits::Zero;
+use num_traits::Zero;
 
 use crate::prime::probably_prime;
 

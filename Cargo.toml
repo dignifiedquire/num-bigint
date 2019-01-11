@@ -28,6 +28,11 @@ name = "gcd"
 harness = false
 name = "shootout-pidigits"
 
+[[bench]]
+name = "prime"
+harness = false
+
+
 [dependencies.smallvec]
 version = "0.6.7"
 default-features = false
@@ -67,6 +72,9 @@ version = "1.2.0"
 [dependencies.byteorder]
 version = "1.2.7"
 
+[dev-dependencies]
+criterion = "0.2"
+rand_chacha = "0.1"
 
 [features]
 default = ["std", "i128", "u64_digit"]
