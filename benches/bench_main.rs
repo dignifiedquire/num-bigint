@@ -11,14 +11,14 @@ extern crate num_traits;
 
 
 
-mod bmarks;
+mod benchmarks;
 
 
 criterion_main! {
-    bmarks::prime_benches::benches,
-    bmarks::gcd::benches,
-    bmarks::factorial::benches,
-    bmarks::bigint::benches,
+    benchmarks::prime_benches::benches,
+    benchmarks::gcd::benches,
+    benchmarks::factorial::benches,
+    benchmarks::bigint::benches,
 }
 
 
