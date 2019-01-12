@@ -16,9 +16,6 @@ autobenches = false
 [package.metadata.docs.rs]
 features = ["std", "serde", "rand", "prime"]
 
-
-
-
 [[bench]]
 harness = false
 name = "bench_main"
@@ -33,7 +30,6 @@ version = "0.1.39"
 default-features = false
 
 [dependencies.num-traits]
-# git = "https://github.com/stichtingorganism/num-traits" 
 version = "0.2.4"
 default-features = false
 
