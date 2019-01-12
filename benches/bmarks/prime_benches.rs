@@ -1,22 +1,14 @@
+// #![cfg(feature = "prime")]
 
 
+use criterion::Criterion;
+use num_bigint::BigUint;
+use rand::SeedableRng;
+use rand_chacha::ChaChaRng;
+use num_bigint::prime;
+use num_bigint::RandPrime;
 
-extern crate num_bigint_dig as num_bigint;
-#[macro_use] extern crate criterion;
-extern crate rand;
-extern crate rand_chacha;
-
-
-
-mod prime_benches {
-    use criterion::Criterion;
-    use num_bigint::BigUint;
-    use rand::SeedableRng;
-    use rand_chacha::ChaChaRng;
-    use num_bigint::prime;
-    use num_bigint::RandPrime;
-
-    const NUM: &'static str = "203956878356401977405765866929034577280193993314348263094772646453283062722701277632936616063144088173312372882677123879538709400158306567338328279154499698366071906766440037074217117805690872792848149112022286332144876183376326512083574821647933992961249917319836219304274280243803104015000563790123";
+const NUM: &'static str = "203956878356401977405765866929034577280193993314348263094772646453283062722701277632936616063144088173312372882677123879538709400158306567338328279154499698366071906766440037074217117805690872792848149112022286332144876183376326512083574821647933992961249917319836219304274280243803104015000563790123";
 
 
     fn probably_prime_0(c: &mut Criterion) {
@@ -88,23 +80,17 @@ mod prime_benches {
         });
     }
 
-    criterion_group!{
-        name = prime_benches;
-        config = Criterion::default();
-        targets =
-            probably_prime_0,
-            probably_prime_1,
-            probably_prime_5,
-            probably_prime_10,
-            probably_prime_20,
-            bench_prime_lucas,
-            bench_prime_miller_rabin,
-            bench_gen_prime,
-    }
-
+criterion_group!{
+    name = benches;
+    config = Criterion::default();
+    targets =
+        probably_prime_0,
+        probably_prime_1,
+        probably_prime_5,
+        probably_prime_10,
+        probably_prime_20,
+        bench_prime_lucas,
+        bench_prime_miller_rabin,
+        bench_gen_prime,
 }
 
-
-criterion_main!(
-    prime_benches::prime_benches,
-);

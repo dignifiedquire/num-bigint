@@ -11,26 +11,17 @@ repository = "https://github.com/dignifiedquier/num-bigint"
 version = "0.2.1"
 readme = "README.md"
 build = "build.rs"
+autobenches = false
 
 [package.metadata.docs.rs]
 features = ["std", "serde", "rand", "prime"]
 
-[[bench]]
-name = "bigint"
 
-[[bench]]
-name = "factorial"
 
-[[bench]]
-name = "gcd"
 
 [[bench]]
 harness = false
-name = "shootout-pidigits"
-
-[[bench]]
-name = "prime"
-harness = false
+name = "bench_main"
 
 
 [dependencies.smallvec]
