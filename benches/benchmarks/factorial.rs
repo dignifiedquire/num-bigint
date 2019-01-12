@@ -1,5 +1,3 @@
-
-
 use num_bigint::BigUint;
 use num_traits::One;
 use std::ops::{Div, Mul};

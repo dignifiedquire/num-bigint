@@ -1,6 +1,3 @@
-// #![cfg(feature = "prime")]
-
-
 use criterion::Criterion;
 use num_bigint::BigUint;
 use rand::SeedableRng;

@@ -1,5 +1,3 @@
-// #![cfg(feature = "rand")]
-
 use num_bigint::{BigUint, RandBigInt};
 use num_integer::Integer;
 use num_traits::Zero;
