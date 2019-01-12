@@ -19,7 +19,7 @@ features = ["std", "serde", "rand", "prime"]
 [[bench]]
 harness = false
 name = "bench_main"
-
+required-features = ["prime"]
 
 [dependencies.smallvec]
 version = "0.6.7"
