@@ -420,11 +420,10 @@ mod bigint {
     }
 }
 
-
 mod prime {
-    use num_bigint::{RandPrime};
-    use rand::prelude::*;
     use num_bigint::prime::probably_prime;
+    use num_bigint::RandPrime;
+    use rand::prelude::*;
 
     #[test]
     fn test_prime_small() {

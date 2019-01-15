@@ -11,14 +11,12 @@ use Sign::*;
 
 use big_digit::BigDigit;
 use bigint::{into_magnitude, magnitude};
-use num_iter::range_step;
-use num_traits::{FromPrimitive, ToPrimitive};
 use integer::Integer;
+use num_iter::range_step;
 use num_traits::Zero;
+use num_traits::{FromPrimitive, ToPrimitive};
 
 use crate::prime::probably_prime;
-
-
 
 pub trait RandBigInt {
     /// Generate a random `BigUint` of the given bit size.
@@ -222,8 +220,6 @@ impl Distribution<BigInt> for RandomBits {
         rng.gen_bigint(self.bits)
     }
 }
-
-
 
 /// A generic trait for generating random primes.
 ///

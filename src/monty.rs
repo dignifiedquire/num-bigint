@@ -1,5 +1,5 @@
-use std::ops::Shl;
 use num_traits::{One, Zero};
+use std::ops::Shl;
 
 use big_digit::{self, BigDigit, DoubleBigDigit, SignedDoubleBigDigit};
 use biguint::BigUint;

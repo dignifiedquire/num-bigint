@@ -1,5 +1,5 @@
 [package]
-authors = ["dignifiedquire <dignifiedquire@gmail.com>", "organism <hello@organism.ai>"]
+authors = ["The Rust Project Developers"]
 description = "Big integer implementation for Rust"
 documentation = "https://docs.rs/num-bigint-dig"
 homepage = "https://github.com/dignifiedquire/num-bigint"

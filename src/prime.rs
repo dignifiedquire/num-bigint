@@ -1,16 +1,16 @@
 //https://github.com/RustCrypto/RSA/blob/master/src/prime.rs
 //! Implements probabilistic prime checkers.
 
-use byteorder::{BigEndian, ByteOrder};
-use Sign::Plus;
-use BigInt;
-use BigUint;
-use integer::Integer;
-use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
-use rand::SeedableRng;
-use rand::rngs::StdRng;
 use crate::algorithms::jacobi;
 use bigrand::RandBigInt;
+use byteorder::{BigEndian, ByteOrder};
+use integer::Integer;
+use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
+use rand::rngs::StdRng;
+use rand::SeedableRng;
+use BigInt;
+use BigUint;
+use Sign::Plus;
 
 lazy_static! {
     pub(crate) static ref BIG_1: BigUint = BigUint::one();

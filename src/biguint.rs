@@ -19,27 +19,27 @@ use std::{u64, u8};
 use serde;
 
 use integer::{Integer, Roots};
-use BigInt;
 use num_traits::{
     CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, Float, FromPrimitive, Num, One, Pow,
     ToPrimitive, Unsigned, Zero,
 };
+use BigInt;
 
 use big_digit::{self, BigDigit};
 
+use bigint::Sign::Plus;
 use smallvec::SmallVec;
 use traits::ModInverse;
-use bigint::Sign::Plus;
 
 #[path = "monty.rs"]
 mod monty;
 
-use crate::algorithms::{__add2, __sub2rev, add2, sub2, sub2rev, mod_inverse};
+use self::monty::monty_modpow;
+use super::VEC_SIZE;
+use crate::algorithms::{__add2, __sub2rev, add2, mod_inverse, sub2, sub2rev};
 use crate::algorithms::{biguint_shl, biguint_shr};
 use crate::algorithms::{cmp_slice, fls, ilog2};
 use crate::algorithms::{div_rem, div_rem_digit, mac_with_carry, mul3, scalar_mul};
-use self::monty::monty_modpow;
-use super::VEC_SIZE;
 
 use UsizePromotion;
 
@@ -3136,9 +3136,7 @@ fn test_u128_u32_roundtrip() {
     }
 }
 
-
 // Mod Inverse
-
 
 impl<'a> ModInverse<&'a BigUint> for BigUint {
     fn mod_inverse(self, m: &'a BigUint) -> Option<BigUint> {

@@ -94,11 +94,12 @@ extern crate serde;
 extern crate smallvec;
 
 #[cfg(feature = "prime")]
-#[macro_use] extern crate lazy_static;
+#[macro_use]
+extern crate lazy_static;
 
 extern crate num_integer as integer;
-extern crate num_traits;
 extern crate num_iter;
+extern crate num_traits;
 
 #[cfg(feature = "prime")]
 extern crate byteorder;
@@ -115,8 +116,8 @@ mod biguint;
 #[cfg(feature = "prime")]
 pub mod prime;
 
-pub mod traits;
 pub mod algorithms;
+pub mod traits;
 
 #[cfg(feature = "rand")]
 mod bigrand;
@@ -184,7 +185,7 @@ pub use bigint::Sign;
 pub use bigint::ToBigInt;
 
 #[cfg(feature = "rand")]
-pub use bigrand::{RandBigInt, RandomBits, UniformBigInt, UniformBigUint, RandPrime};
+pub use bigrand::{RandBigInt, RandPrime, RandomBits, UniformBigInt, UniformBigUint};
 
 #[cfg(not(feature = "u64_digit"))]
 pub const VEC_SIZE: usize = 8;

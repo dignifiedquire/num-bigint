@@ -1,19 +1,18 @@
+use crate::VEC_SIZE;
+use big_digit::{self, BigDigit, DoubleBigDigit, SignedDoubleBigDigit};
+use bigint::BigInt;
+use bigint::Sign;
+use bigint::Sign::{Minus, NoSign, Plus};
+use biguint::BigUint;
+use integer::Integer;
+use num_traits;
+use num_traits::{One, Signed, Zero};
+use smallvec::SmallVec;
 use std::borrow::Cow;
 use std::cmp;
 use std::cmp::Ordering::{self, Equal, Greater, Less};
 use std::iter::repeat;
 use std::mem;
-use num_traits;
-use num_traits::{One, Zero, Signed};
-use biguint::BigUint;
-use bigint::BigInt;
-use bigint::Sign;
-use bigint::Sign::{Minus, NoSign, Plus};
-use big_digit::{self, BigDigit, DoubleBigDigit, SignedDoubleBigDigit};
-use crate::VEC_SIZE;
-use smallvec::SmallVec;
-use integer::Integer;
-
 
 // Generic functions for add/subtract/multiply with carry/borrow:
 
@@ -689,11 +688,8 @@ pub fn cmp_slice(a: &[BigDigit], b: &[BigDigit]) -> Ordering {
     return Equal;
 }
 
-
-
 // Few Functions taken from
 // https://github.com/RustCrypto/RSA/blob/master/src/math.rs
-
 
 /// Jacobi returns the Jacobi symbol (x/y), either +1, -1, or 0.
 /// The y argument must be an odd integer.
@@ -752,8 +748,6 @@ pub fn jacobi(x: &BigInt, y: &BigInt) -> isize {
     }
 }
 
-
-
 /// Calculates the extended eucledian algorithm.
 /// See https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm for details.
 /// The returned values are
@@ -793,7 +787,6 @@ pub fn extended_gcd(a: &BigUint, b: &BigUint) -> (BigInt, BigInt, BigInt) {
     (a, ua, va)
 }
 
-
 /// Calculate the modular inverse of `a`.
 /// Implemenation is based on the naive version from wikipedia.
 #[inline]
@@ -821,21 +814,18 @@ pub fn mod_inverse(g: Cow<BigInt>, n: &BigInt) -> Option<BigInt> {
     }
 }
 
-
-
-
 #[cfg(test)]
 mod algorithm_tests {
     // extern crate rand;
 
+    use algorithms::{extended_gcd, jacobi};
     use big_digit::BigDigit;
+    use integer::Integer;
     use num_traits::Num;
     use num_traits::{FromPrimitive, One};
+    use traits::ModInverse;
     use Sign::Plus;
     use {BigInt, BigUint};
-    use algorithms::{extended_gcd, jacobi};
-    use traits::ModInverse;
-    use integer::Integer;
 
     #[test]
     fn test_sub_sign() {
@@ -883,8 +873,6 @@ mod algorithm_tests {
         assert_eq!(t_k, BigInt::from_i32(47).unwrap());
     }
 
-
-
     #[test]
     fn test_jacobi() {
         let cases = [
@@ -914,8 +902,6 @@ mod algorithm_tests {
             assert_eq!(case[2] as isize, jacobi(&x, &y), "jacobi({}, {})", x, y);
         }
     }
-
-
 
     #[test]
     fn test_mod_inverse() {
@@ -979,15 +965,13 @@ mod algorithm_tests {
 
 }
 
-
 #[cfg(feature = "prime")]
 mod random_prime_tests {
-    use rand::thread_rng;
-    use bigrand::RandBigInt;
     use algorithms::extended_gcd;
+    use bigrand::RandBigInt;
+    use rand::thread_rng;
     use BigInt;
     use Sign::Plus;
-
 
     #[test]
     fn test_extended_gcd_assumptions() {

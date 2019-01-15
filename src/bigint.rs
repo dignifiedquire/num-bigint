@@ -23,17 +23,17 @@ use num_traits::{
     ToPrimitive, Zero,
 };
 
-use smallvec::SmallVec;
-use traits::ModInverse;
 use self::Sign::{Minus, NoSign, Plus};
+use super::ParseBigIntError;
 use super::VEC_SIZE;
 use algorithms::mod_inverse;
-use super::ParseBigIntError;
 use big_digit::{self, BigDigit, DoubleBigDigit};
 use biguint;
 use biguint::to_str_radix_reversed;
 use biguint::{BigUint, IntDigits};
+use smallvec::SmallVec;
 use std::borrow::Cow;
+use traits::ModInverse;
 use IsizePromotion;
 use UsizePromotion;
 
@@ -3040,8 +3040,6 @@ impl ModInverse<BigInt> for BigInt {
         mod_inverse(Cow::Owned(self), &m)
     }
 }
-
-
 
 #[test]
 fn test_from_biguint() {

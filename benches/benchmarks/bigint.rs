@@ -1,8 +1,8 @@
+use criterion::Criterion;
 use num_bigint::{BigInt, BigUint, RandBigInt};
 use num_traits::{FromPrimitive, Num, One, Pow, Zero};
 use rand::{SeedableRng, StdRng};
 use std::mem::replace;
-use criterion::Criterion;
 
 fn get_rng() -> StdRng {
     let mut seed = [0; 32];
@@ -17,9 +17,7 @@ fn multiply_bench(c: &mut Criterion, name: String, xbits: usize, ybits: usize) {
     let x = rng.gen_bigint(xbits);
     let y = rng.gen_bigint(ybits);
 
-    c.bench_function(&name, move |b| {
-        b.iter(|| &x * &y)
-    });
+    c.bench_function(&name, move |b| b.iter(|| &x * &y));
 }
 
 fn divide_bench(c: &mut Criterion, name: String, xbits: usize, ybits: usize) {
@@ -27,10 +25,7 @@ fn divide_bench(c: &mut Criterion, name: String, xbits: usize, ybits: usize) {
     let x = rng.gen_bigint(xbits);
     let y = rng.gen_bigint(ybits);
 
-    c.bench_function(&name, move |b| {
-         b.iter(|| &x / &y)
-    });
-   
+    c.bench_function(&name, move |b| b.iter(|| &x / &y));
 }
 
 fn factorial(n: usize) -> BigUint {
@@ -66,7 +61,7 @@ fn fib2(n: usize) -> BigUint {
 }
 
 fn multiply_0(c: &mut Criterion) {
-    multiply_bench(c,"multiply_0".to_string(), 1 << 8, 1 << 8);
+    multiply_bench(c, "multiply_0".to_string(), 1 << 8, 1 << 8);
 }
 
 fn multiply_1(c: &mut Criterion) {
@@ -94,67 +89,48 @@ fn divide_2(c: &mut Criterion) {
 }
 
 fn factorial_100(c: &mut Criterion) {
-    c.bench_function("factorial_100", move |b| {
-        b.iter(|| factorial(100))
-    });
+    c.bench_function("factorial_100", move |b| b.iter(|| factorial(100)));
 }
 
 fn fib_100(c: &mut Criterion) {
-    c.bench_function("fib_100", move |b| {
-         b.iter(|| fib(100))
-    });
+    c.bench_function("fib_100", move |b| b.iter(|| fib(100)));
 }
 
 fn fib_1000(c: &mut Criterion) {
-    c.bench_function("fib_1000", move |b| {
-        b.iter(|| fib(1000))
-    });
+    c.bench_function("fib_1000", move |b| b.iter(|| fib(1000)));
 }
 
 fn fib_10000(c: &mut Criterion) {
-    c.bench_function("fib_10000", move |b| {
-        b.iter(|| fib(10000))
-    });
+    c.bench_function("fib_10000", move |b| b.iter(|| fib(10000)));
 }
 
 fn fib2_100(c: &mut Criterion) {
-    c.bench_function("fib2_100", move |b| {
-        b.iter(|| fib2(100))
-    });
+    c.bench_function("fib2_100", move |b| b.iter(|| fib2(100)));
 }
 
 fn fib2_1000(c: &mut Criterion) {
-    c.bench_function("fib2_1000", move |b| {
-        b.iter(|| fib2(1000))
-    });
+    c.bench_function("fib2_1000", move |b| b.iter(|| fib2(1000)));
 }
 
 fn fib2_10000(c: &mut Criterion) {
-    c.bench_function("fib2_10000", move |b| {
-       b.iter(|| fib2(10000))
-    });
+    c.bench_function("fib2_10000", move |b| b.iter(|| fib2(10000)));
 }
 
 fn fac_to_string(c: &mut Criterion) {
     let fac = factorial(100);
-    c.bench_function("fac_to_string", move |b| {
-        b.iter(|| fac.to_string())
-    });
+    c.bench_function("fac_to_string", move |b| b.iter(|| fac.to_string()));
 }
 
 fn fib_to_string(c: &mut Criterion) {
     let fib = fib(100);
-    c.bench_function("fib_to_string", move |b| {
-        b.iter(|| fib.to_string())
-    });
+    c.bench_function("fib_to_string", move |b| b.iter(|| fib.to_string()));
 }
 
 fn to_str_radix_bench(c: &mut Criterion, radix: u32) {
     let mut rng = get_rng();
     let x = rng.gen_bigint(1009);
-    c.bench_function(
-        &format!("to_str_radix_bench_{:?}", radix),
-        move |b| { b.iter(|| x.to_str_radix(radix))
+    c.bench_function(&format!("to_str_radix_bench_{:?}", radix), move |b| {
+        b.iter(|| x.to_str_radix(radix))
     });
 }
 
@@ -174,7 +150,6 @@ fn to_str_radix_16(c: &mut Criterion) {
     to_str_radix_bench(c, 16);
 }
 
-
 fn to_str_radix_36(c: &mut Criterion) {
     to_str_radix_bench(c, 36);
 }
@@ -185,13 +160,10 @@ fn from_str_radix_bench(c: &mut Criterion, radix: u32) {
     let s = x.to_str_radix(radix);
     assert_eq!(x, BigInt::from_str_radix(&s, radix).unwrap());
 
-    c.bench_function(
-        &format!("from_str_radix_bench{:?}", radix),
-        move |b| { b.iter(|| BigInt::from_str_radix(&s, radix))
+    c.bench_function(&format!("from_str_radix_bench{:?}", radix), move |b| {
+        b.iter(|| BigInt::from_str_radix(&s, radix))
     });
-   
 }
-
 
 fn from_str_radix_02(c: &mut Criterion) {
     from_str_radix_bench(c, 2);
@@ -215,9 +187,8 @@ fn from_str_radix_36(c: &mut Criterion) {
 
 fn rand_bench(c: &mut Criterion, bits: usize) {
     let mut rng = get_rng();
-    c.bench_function(
-        &format!("rand_bench_{:?}", bits),
-        move |b| {  b.iter(|| rng.gen_bigint(bits))
+    c.bench_function(&format!("rand_bench_{:?}", bits), move |b| {
+        b.iter(|| rng.gen_bigint(bits))
     });
 }
 
@@ -253,10 +224,9 @@ fn rand_131072(c: &mut Criterion) {
     rand_bench(c, 1 << 17);
 }
 
-
 fn shl(c: &mut Criterion) {
     let n = BigUint::one() << 1000;
-    
+
     c.bench_function("shl", move |b| {
         b.iter(|| {
             let mut m = n.clone();
@@ -267,11 +237,9 @@ fn shl(c: &mut Criterion) {
     });
 }
 
-
-
 fn shr(c: &mut Criterion) {
     let n = BigUint::one() << 2000;
-    
+
     c.bench_function("shr", move |b| {
         b.iter(|| {
             let mut m = n.clone();
@@ -281,7 +249,6 @@ fn shr(c: &mut Criterion) {
         })
     });
 }
-
 
 fn hash(c: &mut Criterion) {
     use std::collections::HashSet;
@@ -294,7 +261,6 @@ fn hash(c: &mut Criterion) {
         })
     });
 }
-
 
 fn pow_bench(c: &mut Criterion) {
     c.bench_function("pow_bench", move |b| {
@@ -326,18 +292,14 @@ const RFC3526_2048BIT_MODP_GROUP: &'static str =
      DE2BCBF6_95581718_3995497C_EA956AE5_15D22618_98FA0510\
      15728E5A_8AACAA68_FFFFFFFF_FFFFFFFF";
 
-
 fn modpow(c: &mut Criterion) {
     let mut rng = get_rng();
     let base = rng.gen_biguint(2048);
     let e = rng.gen_biguint(2048);
     let m = BigUint::from_str_radix(RFC3526_2048BIT_MODP_GROUP, 16).unwrap();
 
-    c.bench_function("modpow", move |b| {
-       b.iter(|| base.modpow(&e, &m))
-    }); 
+    c.bench_function("modpow", move |b| b.iter(|| base.modpow(&e, &m)));
 }
-
 
 fn modpow_even(c: &mut Criterion) {
     let mut rng = get_rng();
@@ -347,39 +309,29 @@ fn modpow_even(c: &mut Criterion) {
     let m = BigUint::from_str_radix(RFC3526_2048BIT_MODP_GROUP, 16).unwrap() - 1u32;
 
     c.bench_function("modpow_even", move |b| {
-       b.iter(|| base.modpow(&e, &m));
+        b.iter(|| base.modpow(&e, &m));
     });
 }
-
 
 fn roots_sqrt(c: &mut Criterion) {
     let mut rng = get_rng();
     let x = rng.gen_biguint(2048);
-    c.bench_function("roots_sqrt", move |b| {
-       b.iter(|| x.sqrt())
-    });
+    c.bench_function("roots_sqrt", move |b| b.iter(|| x.sqrt()));
 }
-
 
 fn roots_cbrt(c: &mut Criterion) {
     let mut rng = get_rng();
     let x = rng.gen_biguint(2048);
-    c.bench_function("roots_cbrt", move |b| {
-       b.iter(|| x.cbrt())
-    });
+    c.bench_function("roots_cbrt", move |b| b.iter(|| x.cbrt()));
 }
-
 
 fn roots_nth_100(c: &mut Criterion) {
     let mut rng = get_rng();
     let x = rng.gen_biguint(2048);
-    c.bench_function("roots_nth_100", move |b| {
-        b.iter(|| x.nth_root(100))
-    });
+    c.bench_function("roots_nth_100", move |b| b.iter(|| x.nth_root(100)));
 }
 
-
-criterion_group!{
+criterion_group! {
     name = benches;
     config = Criterion::default();
     targets =
