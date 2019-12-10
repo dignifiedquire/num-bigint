@@ -68,6 +68,7 @@ default-features = false
 rand_chacha = "0.2"
 rand_xorshift = "0.2"
 rand_isaac = "0.2"
+rand = { version = "0.7", features = ["small_rng"] }
 
 [dev-dependencies.serde_test]
 version = "1.0"

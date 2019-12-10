@@ -9,6 +9,9 @@ Big integer types for Rust, `BigInt` and `BigUint`.
 
 > **Warning** This is a fork of [`rust-num/num-bigint`](https://github.com/rust-num/num-bigint) with a focus on providing functionality, needed to implement cryptographic operations.
 
+
+Minimum required Rust version: `1.36`.
+
 ## Usage
 
 Add this to your `Cargo.toml`:
@@ -29,7 +32,7 @@ extern crate num_bigint_dig as num_bigint;
 The `std` feature is enabled by default and mandatory to compile on older rust
 version.
 
-On Rust 1.36 and later, it is possible to use this crate on no_std target. If
+It is possible to use this crate on no_std target. If
 you wish to compile for a target that does not have an `std` crate, you should
 use `num-bigint` with `default-features = false`. All other sub-features should
 be compatible with no_std. Note that in this mode, `num-bigint` still relies on
