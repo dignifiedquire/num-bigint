@@ -19,24 +19,24 @@ features = ["std", "serde", "rand", "prime"]
 [dependencies]
 
 [dependencies.smallvec]
-version = "1.0.0"
+version = "1.6"
 default-features = false
 
 [dependencies.num-integer]
-version = "0.1.39"
+version = "0.1.44"
 default-features = false
 
 [dependencies.num-traits]
-version = "0.2.4"
+version = "0.2.14"
 default-features = false
 
 [dependencies.num-iter]
-version = "0.1.37"
+version = "0.1.42"
 default-features = false
 
 [dependencies.rand]
 optional = true
-version = "0.7"
+version = "0.8"
 default-features = false
 
 [dependencies.zeroize]
@@ -65,21 +65,21 @@ version = "1.2.7"
 default-features = false
 
 [dev-dependencies]
-rand_chacha = "0.2"
-rand_xorshift = "0.2"
-rand_isaac = "0.2"
-rand = { version = "0.7", features = ["small_rng"] }
+rand_chacha = "0.3"
+rand_xorshift = "0.3"
+rand_isaac = "0.3"
+rand = { version = "0.8", features = ["small_rng", "std_rng"] }
 
 [dev-dependencies.serde_test]
 version = "1.0"
 
 [build-dependencies]
-autocfg = "0.1.5"
+autocfg = "1.0"
 
 [features]
 default = ["std", "i128", "u64_digit"]
 i128 = ["num-integer/i128", "num-traits/i128"]
-std = ["num-integer/std", "num-traits/std", "smallvec/write", "rand/std", "serde/std"]
+std = ["num-integer/std", "num-traits/std", "smallvec/write", "rand/std_rng", "serde/std"]
 u64_digit = []
 prime = ["rand"]
 nightly = []

@@ -2,7 +2,6 @@
 
 use rand::distributions::uniform::{SampleBorrow, SampleUniform, UniformSampler};
 use rand::prelude::*;
-use rand::AsByteSliceMut;
 use rand::Rng;
 
 use BigInt;
@@ -20,6 +19,8 @@ use num_traits::{FromPrimitive, ToPrimitive};
 
 #[cfg(feature = "prime")]
 use crate::prime::probably_prime;
+
+use smallvec::SmallVec;
 
 pub trait RandBigInt {
     /// Generate a random `BigUint` of the given bit size.
@@ -45,18 +46,25 @@ pub trait RandBigInt {
 
 impl<R: Rng + ?Sized> RandBigInt for R {
     fn gen_biguint(&mut self, bit_size: usize) -> BigUint {
-        use super::big_digit::BITS;
+        use super::{big_digit::BITS, VEC_SIZE};
         let (digits, rem) = bit_size.div_rem(&BITS);
-        let mut data = smallvec![BigDigit::default(); digits + (rem > 0) as usize];
+        let mut data: SmallVec<[BigDigit; VEC_SIZE]> =
+            smallvec![BigDigit::default(); digits + (rem > 0) as usize];
+
         // `fill_bytes` is faster than many `gen::<u32>` calls
-        self.fill_bytes(data[..].as_byte_slice_mut());
+        self.try_fill(&mut data[..]).unwrap();
+
         // Swap bytes per the `Rng::fill` source. This might be
         // unnecessary if reproducibility across architectures is not
         // desired.
-        data.to_le();
+        for x in data.iter_mut() {
+            *x = x.to_le();
+        }
+
         if rem > 0 {
             data[digits] >>= BITS - rem;
         }
+
         BigUint::new_native(data)
     }
 
