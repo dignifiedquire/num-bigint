@@ -55,6 +55,7 @@ optional = true
 optional = true
 version = "1.0"
 default-features = false
+features = [ "alloc" ]
 
 [dependencies.libm]
 version = "0.2.1"
