@@ -53,13 +53,14 @@ pub enum Sign {
     Plus,
 }
 
-#[cfg(feature = "zeroize")]
-impl Zeroize for Sign {
-    fn zeroize(&mut self) {
-        // TODO: Figure out how to better clear the sign.
-        *self = Sign::NoSign;
+impl Default for Sign {
+    fn default() -> Sign {
+        Sign::NoSign
     }
 }
+
+#[cfg(feature = "zeroize")]
+impl zeroize::DefaultIsZeroes for Sign {}
 
 impl Neg for Sign {
     type Output = Sign;
