@@ -3390,4 +3390,8 @@ impl arbitrary::Arbitrary<'_> for BigUint {
         let data = SmallVec::arbitrary(src)?;
         Ok(Self { data })
     }
+
+    fn size_hint(depth: usize) -> (usize, Option<usize>) {
+        SmallVec::<[BigDigit; VEC_SIZE]>::size_hint(depth)
+    }
 }

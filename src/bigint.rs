@@ -3323,6 +3323,10 @@ impl arbitrary::Arbitrary<'_> for BigInt {
         let data = BigUint::arbitrary(src)?;
         Ok(Self::from_biguint(sign, data))
     }
+
+    fn size_hint(depth: usize) -> (usize, Option<usize>) {
+        arbitrary::size_hint::and(BigUint::size_hint(depth), bool::size_hint(depth))
+    }
 }
 
 #[test]
