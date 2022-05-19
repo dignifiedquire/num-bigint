@@ -97,5 +97,4 @@ mod tests {
             assert_eq!(case[2] as isize, jacobi(&x, &y), "jacobi({}, {})", x, y);
         }
     }
-
 }

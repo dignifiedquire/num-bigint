@@ -20,8 +20,7 @@ use std::{i128, u128};
 use std::{u16, u32, u64, u8, usize};
 
 use num_traits::{
-    CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, FromPrimitive, Num, One, Pow,
-    ToPrimitive, Zero,
+    CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, FromPrimitive, Num, One, Pow, ToPrimitive, Zero,
 };
 
 use num_traits::float::FloatCore;
