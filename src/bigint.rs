@@ -3311,6 +3311,20 @@ impl<'a, 'b> ExtendedGcd<&'b BigUint> for &'a BigInt {
     }
 }
 
+// arbitrary support
+#[cfg(feature = "fuzz")]
+impl arbitrary::Arbitrary<'_> for BigInt {
+    fn arbitrary(src: &mut arbitrary::Unstructured<'_>) -> arbitrary::Result<Self> {
+        let sign = if bool::arbitrary(src)? {
+            Sign::Plus
+        } else {
+            Sign::Minus
+        };
+        let data = BigUint::arbitrary(src)?;
+        Ok(Self { sign, data })
+    }
+}
+
 #[test]
 fn test_from_biguint() {
     fn check(inp_s: Sign, inp_n: usize, ans_s: Sign, ans_n: usize) {
