@@ -3321,7 +3321,7 @@ impl arbitrary::Arbitrary<'_> for BigInt {
             Sign::Minus
         };
         let data = BigUint::arbitrary(src)?;
-        Ok(Self { sign, data })
+        Ok(Self::from_biguint(sign, data))
     }
 }
 
