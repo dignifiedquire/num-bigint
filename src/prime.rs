@@ -141,7 +141,7 @@ pub fn next_prime(n: &BigUint) -> BigUint {
     'outer: loop {
         let mut prime = 3;
         for i in 0..prime_limit {
-            moduli[i] = &res / prime;
+            moduli[i] = &res % prime;
             prime += PRIME_GAP[i];
         }
 
