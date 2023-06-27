@@ -633,7 +633,7 @@ mod tests {
     }
 
     #[test]
-    fn test_next_prime() {
+    fn test_next_prime_basics() {
         let primes1 = (0..2048u32)
             .map(|i| next_prime(&i.to_biguint().unwrap()))
             .collect::<Vec<_>>();
@@ -650,5 +650,12 @@ mod tests {
             assert_eq!(p1, p2);
             assert!(probably_prime(p1, 25));
         }
+    }
+
+    #[test]
+    fn test_next_prime_bug_44() {
+        let i = 1032989.to_biguint().unwrap();
+        let next = next_prime(&i);
+        assert_eq!(1033001.to_biguint().unwrap(), next);
     }
 }
