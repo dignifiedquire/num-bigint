@@ -1,7 +1,6 @@
 // https://github.com/RustCrypto/RSA/blob/master/src/prime.rs
 //! Implements probabilistic prime checkers.
 
-use byteorder::{BigEndian, ByteOrder};
 use integer::Integer;
 use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
 use rand::rngs::StdRng;
@@ -188,17 +187,10 @@ pub fn probably_prime_miller_rabin(n: &BigUint, reps: usize, force2: bool) -> bo
     // determine q, k such that nm1 = q << k
     let k = nm1.trailing_zeros().unwrap() as usize;
     let q = &nm1 >> k;
-    let nm3 = n - &*BIG_3;
 
-    let mut seed_vec = vec![0u8; 8];
-    BigEndian::write_uint(
-        seed_vec.as_mut_slice(),
-        n.get_limb(0) as u64,
-        big_digit::BITS / 8,
-    );
-    let mut seed = [0u8; 32];
-    seed[0..8].copy_from_slice(&seed_vec[..]);
-    let mut rng = StdRng::from_seed(seed);
+    let nm3 = n - &*BIG_2;
+
+    let mut rng = StdRng::seed_from_u64(n.get_limb(0) as u64);
 
     'nextrandom: for i in 0..reps {
         let x = if i == reps - 1 && force2 {
@@ -215,7 +207,7 @@ pub fn probably_prime_miller_rabin(n: &BigUint, reps: usize, force2: bool) -> bo
         for _ in 1..k {
             y = y.modpow(&*BIG_2, n);
             if y == nm1 {
-                break 'nextrandom;
+                continue 'nextrandom;
             }
             if y.is_one() {
                 return false;
@@ -281,7 +273,8 @@ pub fn probably_prime_lucas(n: &BigUint) -> bool {
             panic!("internal error: cannot find (D/n) = -1 for {:?}", n)
         }
 
-        let j = jacobi(&BigInt::from_u64(p * p - 4).unwrap(), &n_int);
+        let d_int = BigInt::from_u64(p * p - 4).unwrap();
+        let j = jacobi(&d_int, &n_int);
 
         if j == -1 {
             break;
@@ -294,14 +287,15 @@ pub fn probably_prime_lucas(n: &BigUint) -> bool {
             // If p+2 == n, then n is prime; otherwise p+2 is a proper factor of n.
             return n_int.to_i64() == Some(p as i64 + 2);
         }
-
-        // We'll never find (d/n) = -1 if n is a square.
-        // If n is a non-square we expect to find a d in just a few attempts on average.
-        // After 40 attempts, take a moment to check if n is indeed a square.
-
-        let t1 = &n_int * &n_int;
-        if p == 40 && t1.sqrt() == n_int {
-            return false;
+        if p == 40 {
+            // We'll never find (d/n) = -1 if n is a square.
+            // If n is a non-square we expect to find a d in just a few attempts on average.
+            // After 40 attempts, take a moment to check if n is indeed a square.
+            let t1 = n.sqrt();
+            let t1 = &t1 * &t1;
+            if &t1 == n {
+                return false;
+            }
         }
 
         p += 1;
@@ -544,6 +538,15 @@ mod tests {
             "80579735209",
             "105919633",
         ];
+
+        // Test Cases from #51
+        static ref ISSUE_51: Vec<&'static str> = vec![
+            "1579751",
+            "1884791",
+            "3818929",
+            "4080359",
+            "4145951",
+        ];
     }
 
     #[test]
@@ -573,6 +576,14 @@ mod tests {
                     i,
                 );
             }
+        }
+    }
+
+    #[test]
+    fn test_issue_51() {
+        for num in ISSUE_51.iter() {
+            let p = BigUint::parse_bytes(num.as_bytes(), 10).unwrap();
+            assert!(probably_prime(&p, 20), "{} is a prime number", num);
         }
     }
 
