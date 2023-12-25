@@ -16,6 +16,8 @@ use num_iter::range_step;
 use num_traits::Zero;
 #[cfg(feature = "prime")]
 use num_traits::{FromPrimitive, ToPrimitive};
+#[cfg(feature = "prime")]
+use once_cell::sync::Lazy;
 
 #[cfg(feature = "prime")]
 use crate::prime::probably_prime;
@@ -294,14 +296,12 @@ pub trait RandPrime {
 #[cfg(feature = "prime")]
 const SMALL_PRIMES: [u8; 15] = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53];
 
+/// The product of the values in SMALL_PRIMES and allows us
+/// to reduce a candidate prime by this number and then determine whether it's
+/// coprime to all the elements of SMALL_PRIMES without further BigUint
+/// operations.
 #[cfg(feature = "prime")]
-lazy_static! {
-    /// The product of the values in SMALL_PRIMES and allows us
-    /// to reduce a candidate prime by this number and then determine whether it's
-    /// coprime to all the elements of SMALL_PRIMES without further BigUint
-    /// operations.
-    static ref SMALL_PRIMES_PRODUCT: BigUint = BigUint::from_u64(16_294_579_238_595_022_365).unwrap();
-}
+static SMALL_PRIMES_PRODUCT: Lazy<BigUint> = Lazy::new(|| BigUint::from_u64(16_294_579_238_595_022_365).unwrap());
 
 #[cfg(feature = "prime")]
 impl<R: Rng + ?Sized> RandPrime for R {
