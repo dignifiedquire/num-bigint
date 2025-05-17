@@ -62,13 +62,6 @@ features = [ "alloc" ]
 [dependencies.libm]
 version = "0.2.1"
 
-[dependencies.lazy_static]
-version = "1.2.0"
-default-features = false
-# no_std feature is an anti-pattern. Why, lazy_static, why?
-# See https://github.com/rust-lang-nursery/lazy-static.rs/issues/150
-features = ["spin_no_std"]
-
 [dev-dependencies]
 rand_chacha = "0.3"
 rand_xorshift = "0.3"
