@@ -89,9 +89,7 @@ std = [
     "smallvec/write",
     "rand/std",
     "serde/std",
-    "lazy_static"
 ]
 u64_digit = []
 prime = ["rand/std_rng"]
 nightly = []
-lazy_static = ["dep:lazy_static"]
