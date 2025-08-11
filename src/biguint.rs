@@ -1,7 +1,7 @@
 #[allow(deprecated, unused_imports)]
 use alloc::borrow::Cow;
 use alloc::string::String;
-use alloc::vec::Vec;
+use alloc::{vec, vec::Vec};
 use core::cmp::Ordering::{self, Equal, Greater, Less};
 use core::default::Default;
 use core::hash::{Hash, Hasher};
