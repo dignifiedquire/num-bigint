@@ -79,7 +79,7 @@
 //!
 //! ## Compatibility
 //!
-//! The `num-bigint-dig` crate is tested for rustc 1.56 and greater.
+//! The `num-bigint-dig` crate is tested for rustc 1.60 and greater.
 //!
 //! ## `no_std` compatibility
 //!
@@ -111,8 +111,7 @@ extern crate std;
 extern crate smallvec;
 
 #[cfg(feature = "prime")]
-#[macro_use]
-extern crate lazy_static;
+extern crate once_cell;
 
 extern crate num_integer as integer;
 
