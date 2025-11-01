@@ -11,9 +11,7 @@ use rand::prelude::*;
 fn test_mul_divide_torture_count(count: usize) {
     let bits_max = 1 << 12;
     #[cfg(target_pointer_width = "32")]
-    let seed = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-    ];
+    let seed = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
     #[cfg(target_pointer_width = "64")]
     let seed = [
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
