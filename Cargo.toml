@@ -13,7 +13,7 @@ name = "num-bigint-dig"
 repository = "https://github.com/dignifiedquire/num-bigint"
 version = "0.8.5"
 edition = "2021"
-rust-version = "1.56"
+rust-version = "1.60"
 readme = "README.md"
 build = "build.rs"
 autobenches = false
@@ -62,12 +62,8 @@ features = [ "alloc" ]
 [dependencies.libm]
 version = "0.2.1"
 
-[dependencies.lazy_static]
-version = "1.2.0"
-default-features = false
-# no_std feature is an anti-pattern. Why, lazy_static, why?
-# See https://github.com/rust-lang-nursery/lazy-static.rs/issues/150
-features = ["spin_no_std"]
+[dependencies.once_cell]
+version = "1"
 
 [dev-dependencies]
 rand_chacha = "0.3"
