@@ -1,6 +1,7 @@
 // https://github.com/RustCrypto/RSA/blob/master/src/prime.rs
 //! Implements probabilistic prime checkers.
 
+use alloc::vec;
 use integer::Integer;
 use num_traits::{FromPrimitive, One, ToPrimitive, Zero};
 use once_cell::sync::Lazy;
