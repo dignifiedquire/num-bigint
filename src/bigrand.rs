@@ -1,5 +1,6 @@
 //! Randomization of big integers
 
+use alloc::vec;
 use rand::distributions::uniform::{SampleBorrow, SampleUniform, UniformSampler};
 use rand::prelude::*;
 use rand::Rng;
