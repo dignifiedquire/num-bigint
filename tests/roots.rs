@@ -105,22 +105,22 @@ mod biguint {
     #[test]
     fn test_roots_rand() {
         #[cfg(feature = "std")]
-        fn thread_rng() -> impl rand::Rng {
-            rand::thread_rng()
+        fn rng() -> impl rand::Rng {
+            rand::rng()
         }
         #[cfg(not(feature = "std"))]
-        fn thread_rng() -> impl rand::Rng {
+        fn rng() -> impl rand::Rng {
             use rand::SeedableRng;
             // Chosen by fair dice roll
             rand::rngs::StdRng::seed_from_u64(4)
         }
 
         use crate::num_bigint::RandBigInt;
-        use rand::distributions::Uniform;
+        use rand::distr::Uniform;
         use rand::Rng;
 
-        let rng = &mut thread_rng();
-        let bit_range = Uniform::new(0, 2048);
+        let rng = &mut rng();
+        let bit_range = Uniform::new(0, 2048).unwrap();
         let sample_bits: Vec<_> = rng.sample_iter(&bit_range).take(100).collect();
         for bits in sample_bits {
             let x = rng.gen_biguint(bits);

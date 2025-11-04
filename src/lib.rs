@@ -61,7 +61,7 @@
 //! # fn main() {
 //! use bigint::{ToBigInt, RandBigInt};
 //!
-//! let mut rng = rand::thread_rng();
+//! let mut rng = rand::rng();
 //! let a = rng.gen_bigint(1000);
 //!
 //! let low = -10000.to_bigint().unwrap();
