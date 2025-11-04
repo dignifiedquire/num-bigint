@@ -1,7 +1,7 @@
 //! Randomization of big integers
 
 use alloc::vec;
-use rand::distributions::uniform::{SampleBorrow, SampleUniform, UniformSampler};
+use rand::distr::uniform::{self, SampleBorrow, SampleUniform, UniformSampler};
 use rand::prelude::*;
 use rand::Rng;
 
@@ -71,12 +71,12 @@ impl<R: Rng + ?Sized> RandBigInt for R {
                 // again with probability 0.5. This is because otherwise,
                 // the probability of generating a zero BigInt would be
                 // double that of any other number.
-                if self.gen() {
+                if self.random() {
                     continue;
                 } else {
                     NoSign
                 }
-            } else if self.gen() {
+            } else if self.random() {
                 Plus
             } else {
                 Minus
@@ -129,7 +129,7 @@ impl UniformSampler for UniformBigUint {
     type X = BigUint;
 
     #[inline]
-    fn new<B1, B2>(low_b: B1, high_b: B2) -> Self
+    fn new<B1, B2>(low_b: B1, high_b: B2) -> Result<Self, uniform::Error>
     where
         B1: SampleBorrow<Self::X> + Sized,
         B2: SampleBorrow<Self::X> + Sized,
@@ -139,14 +139,14 @@ impl UniformSampler for UniformBigUint {
 
         assert!(low < high);
 
-        UniformBigUint {
+        Ok(UniformBigUint {
             len: high - low,
             base: low.clone(),
-        }
+        })
     }
 
     #[inline]
-    fn new_inclusive<B1, B2>(low_b: B1, high_b: B2) -> Self
+    fn new_inclusive<B1, B2>(low_b: B1, high_b: B2) -> Result<Self, uniform::Error>
     where
         B1: SampleBorrow<Self::X> + Sized,
         B2: SampleBorrow<Self::X> + Sized,
@@ -160,7 +160,7 @@ impl UniformSampler for UniformBigUint {
     }
 
     #[inline]
-    fn sample_single<R: Rng + ?Sized, B1, B2>(low_b: B1, high_b: B2, rng: &mut R) -> Self::X
+    fn sample_single<R: Rng + ?Sized, B1, B2>(low_b: B1, high_b: B2, rng: &mut R) -> Result<Self::X, uniform::Error>
     where
         B1: SampleBorrow<Self::X> + Sized,
         B2: SampleBorrow<Self::X> + Sized,
@@ -168,7 +168,7 @@ impl UniformSampler for UniformBigUint {
         let low = low_b.borrow();
         let high = high_b.borrow();
 
-        rng.gen_biguint_range(low, high)
+        Ok(rng.gen_biguint_range(low, high))
     }
 }
 
@@ -187,7 +187,7 @@ impl UniformSampler for UniformBigInt {
     type X = BigInt;
 
     #[inline]
-    fn new<B1, B2>(low_b: B1, high_b: B2) -> Self
+    fn new<B1, B2>(low_b: B1, high_b: B2) -> Result<Self, uniform::Error>
     where
         B1: SampleBorrow<Self::X> + Sized,
         B2: SampleBorrow<Self::X> + Sized,
@@ -196,14 +196,14 @@ impl UniformSampler for UniformBigInt {
         let high = high_b.borrow();
 
         assert!(low < high);
-        UniformBigInt {
+        Ok(UniformBigInt {
             len: into_magnitude(high - low),
             base: low.clone(),
-        }
+        })
     }
 
     #[inline]
-    fn new_inclusive<B1, B2>(low_b: B1, high_b: B2) -> Self
+    fn new_inclusive<B1, B2>(low_b: B1, high_b: B2) -> Result<Self, uniform::Error>
     where
         B1: SampleBorrow<Self::X> + Sized,
         B2: SampleBorrow<Self::X> + Sized,
@@ -221,7 +221,7 @@ impl UniformSampler for UniformBigInt {
     }
 
     #[inline]
-    fn sample_single<R: Rng + ?Sized, B1, B2>(low_b: B1, high_b: B2, rng: &mut R) -> Self::X
+    fn sample_single<R: Rng + ?Sized, B1, B2>(low_b: B1, high_b: B2, rng: &mut R) -> Result<Self::X, uniform::Error>
     where
         B1: SampleBorrow<Self::X> + Sized,
         B2: SampleBorrow<Self::X> + Sized,
@@ -229,7 +229,7 @@ impl UniformSampler for UniformBigInt {
         let low = low_b.borrow();
         let high = high_b.borrow();
 
-        rng.gen_bigint_range(low, high)
+        Ok(rng.gen_bigint_range(low, high))
     }
 }
 
@@ -275,10 +275,10 @@ impl Distribution<BigInt> for RandomBits {
 /// extern crate rand;
 /// extern crate num_bigint_dig as num_bigint;
 ///
-/// use rand::thread_rng;
+/// use rand::rng;
 /// use num_bigint::RandPrime;
 ///
-/// let mut rng = thread_rng();
+/// let mut rng = rng();
 /// let p = rng.gen_prime(1024);
 /// assert_eq!(p.bits(), 1024);
 /// ```

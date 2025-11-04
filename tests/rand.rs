@@ -10,22 +10,23 @@ extern crate rand_xorshift;
 mod biguint {
     use crate::num_bigint::{BigUint, RandBigInt, RandomBits};
     use num_traits::Zero;
-    use rand::distributions::Uniform;
+    use rand::distr::{Uniform, uniform};
     use rand::{Rng, SeedableRng};
 
     #[cfg(feature = "std")]
-    fn thread_rng() -> impl Rng {
-        rand::thread_rng()
+
+    fn rng() -> impl Rng {
+        rand::rng()
     }
     #[cfg(not(feature = "std"))]
-    fn thread_rng() -> impl Rng {
+    fn rng() -> impl Rng {
         // Chosen by fair dice roll
         rand::rngs::StdRng::seed_from_u64(4)
     }
 
     #[test]
     fn test_rand() {
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let n: BigUint = rng.gen_biguint(137);
         assert!(n.bits() <= 137);
         assert!(rng.gen_biguint(0).is_zero());
@@ -33,7 +34,7 @@ mod biguint {
 
     #[test]
     fn test_rand_bits() {
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let n: BigUint = rng.sample(&RandomBits::new(137));
         assert!(n.bits() <= 137);
         let z: BigUint = rng.sample(&RandomBits::new(0));
@@ -42,7 +43,7 @@ mod biguint {
 
     #[test]
     fn test_rand_range() {
-        let mut rng = thread_rng();
+        let mut rng = rng();
 
         for _ in 0..10 {
             assert_eq!(
@@ -66,13 +67,13 @@ mod biguint {
     #[test]
     #[should_panic]
     fn test_zero_rand_range() {
-        thread_rng().gen_biguint_range(&BigUint::from(54u32), &BigUint::from(54u32));
+        rng().gen_biguint_range(&BigUint::from(54u32), &BigUint::from(54u32));
     }
 
     #[test]
     #[should_panic]
     fn test_negative_rand_range() {
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let l = BigUint::from(2352u32);
         let u = BigUint::from(3513u32);
         // Switching u and l should fail:
@@ -80,18 +81,18 @@ mod biguint {
     }
 
     #[test]
-    fn test_rand_uniform() {
-        let mut rng = thread_rng();
+    fn test_rand_uniform() -> Result<(), uniform::Error> {
+        let mut rng = rng();
 
-        let tiny = Uniform::new(BigUint::from(236u32), BigUint::from(237u32));
+        let tiny = Uniform::new(BigUint::from(236u32), BigUint::from(237u32))?;
         for _ in 0..10 {
             assert_eq!(rng.sample(&tiny), BigUint::from(236u32));
         }
 
         let l = BigUint::from(403469000u32 + 2352);
         let u = BigUint::from(403469000u32 + 3513);
-        let below = Uniform::new(BigUint::zero(), u.clone());
-        let range = Uniform::new(l.clone(), u.clone());
+        let below = Uniform::new(BigUint::zero(), u.clone())?;
+        let range = Uniform::new(l.clone(), u.clone())?;
         for _ in 0..1000 {
             let n: BigUint = rng.sample(&below);
             assert!(n < u);
@@ -100,6 +101,7 @@ mod biguint {
             assert!(n >= l);
             assert!(n < u);
         }
+        Ok(())
     }
 
     fn seeded_value_stability<R: SeedableRng + RandBigInt>(expected: &[&str]) {
@@ -224,22 +226,22 @@ mod biguint {
 mod bigint {
     use crate::num_bigint::{BigInt, RandBigInt, RandomBits};
     use num_traits::Zero;
-    use rand::distributions::Uniform;
+    use rand::distr::{Uniform, uniform};
     use rand::{Rng, SeedableRng};
 
     #[cfg(feature = "std")]
-    fn thread_rng() -> impl Rng {
-        rand::thread_rng()
+    fn rng() -> impl Rng {
+        rand::rng()
     }
     #[cfg(not(feature = "std"))]
-    fn thread_rng() -> impl Rng {
+    fn rng() -> impl Rng {
         // Chosen by fair dice roll
         rand::rngs::StdRng::seed_from_u64(4)
     }
 
     #[test]
     fn test_rand() {
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let n: BigInt = rng.gen_bigint(137);
         assert!(n.bits() <= 137);
         assert!(rng.gen_bigint(0).is_zero());
@@ -247,7 +249,7 @@ mod bigint {
 
     #[test]
     fn test_rand_bits() {
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let n: BigInt = rng.sample(&RandomBits::new(137));
         assert!(n.bits() <= 137);
         let z: BigInt = rng.sample(&RandomBits::new(0));
@@ -256,19 +258,19 @@ mod bigint {
 
     #[test]
     fn test_rand_range() {
-        let mut rng = thread_rng();
+        let mut outer_rng = rng();
 
         for _ in 0..10 {
             assert_eq!(
-                rng.gen_bigint_range(&BigInt::from(236), &BigInt::from(237)),
+                outer_rng.gen_bigint_range(&BigInt::from(236), &BigInt::from(237)),
                 BigInt::from(236)
             );
         }
 
         fn check(l: BigInt, u: BigInt) {
-            let mut rng = thread_rng();
+            let mut inner_rng = rng();
             for _ in 0..1000 {
-                let n: BigInt = rng.gen_bigint_range(&l, &u);
+                let n: BigInt = inner_rng.gen_bigint_range(&l, &u);
                 assert!(n >= l);
                 assert!(n < u);
             }
@@ -283,13 +285,13 @@ mod bigint {
     #[test]
     #[should_panic]
     fn test_zero_rand_range() {
-        thread_rng().gen_bigint_range(&BigInt::from(54), &BigInt::from(54));
+        rng().gen_bigint_range(&BigInt::from(54), &BigInt::from(54));
     }
 
     #[test]
     #[should_panic]
     fn test_negative_rand_range() {
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let l = BigInt::from(2352);
         let u = BigInt::from(3513);
         // Switching u and l should fail:
@@ -297,28 +299,29 @@ mod bigint {
     }
 
     #[test]
-    fn test_rand_uniform() {
-        let mut rng = thread_rng();
+    fn test_rand_uniform() -> Result<(), uniform::Error> {
+        let mut outer_rng = rng();
 
-        let tiny = Uniform::new(BigInt::from(236u32), BigInt::from(237u32));
+        let tiny = Uniform::new(BigInt::from(236u32), BigInt::from(237u32))?;
         for _ in 0..10 {
-            assert_eq!(rng.sample(&tiny), BigInt::from(236u32));
+            assert_eq!(outer_rng.sample(&tiny), BigInt::from(236u32));
         }
 
-        fn check(l: BigInt, u: BigInt) {
-            let mut rng = thread_rng();
-            let range = Uniform::new(l.clone(), u.clone());
+        let check = |l: BigInt, u: BigInt| {
+            let mut inner_rng = rng();
+            let range = Uniform::new(l.clone(), u.clone()).unwrap();
             for _ in 0..1000 {
-                let n: BigInt = rng.sample(&range);
+                let n: BigInt = inner_rng.sample(&range);
                 assert!(n >= l);
                 assert!(n < u);
             }
-        }
+        };
         let l: BigInt = BigInt::from(403469000 + 2352);
         let u: BigInt = BigInt::from(403469000 + 3513);
         check(l.clone(), u.clone());
         check(-l.clone(), u.clone());
         check(-u.clone(), -l.clone());
+        Ok(())
     }
 
     fn seeded_value_stability<R: SeedableRng + RandBigInt>(expected: &[&str]) {

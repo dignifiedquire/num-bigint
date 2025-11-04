@@ -1121,22 +1121,22 @@ fn test_negative_shr() {
 #[cfg(feature = "rand")]
 fn test_random_shr() {
     #[cfg(feature = "std")]
-    fn thread_rng() -> impl rand::Rng {
-        rand::thread_rng()
+    fn rng() -> impl rand::Rng {
+        rand::rng()
     }
     #[cfg(not(feature = "std"))]
-    fn thread_rng() -> impl rand::Rng {
+    fn rng() -> impl rand::Rng {
         use rand::SeedableRng;
         // Chosen by fair dice roll
         rand::rngs::StdRng::seed_from_u64(4)
     }
 
-    use rand::distributions::Standard;
+    use rand::distr::StandardUniform;
     use rand::Rng;
 
-    let rng = thread_rng();
+    let rng = rng();
 
-    for p in rng.sample_iter::<i64, _>(&Standard).take(1000) {
+    for p in rng.sample_iter::<i64, _>(&StandardUniform).take(1000) {
         let big = BigInt::from(p);
         let bigger = &big << 1000;
         assert_eq!(&bigger >> 1000, big);
