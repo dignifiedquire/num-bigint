@@ -45,7 +45,7 @@ default-features = false
 
 [dependencies.rand]
 optional = true
-version = "0.9"
+version = "0.10.0-rc.1"
 default-features = false
 
 [dependencies.zeroize]
@@ -66,10 +66,10 @@ version = "0.2.1"
 version = "1"
 
 [dev-dependencies]
-rand_chacha = "0.9"
+rand_chacha = "0.10.0-rc.1"
 rand_xorshift = "0.4"
 rand_isaac = "0.4"
-rand = { version = "0.9", features = ["small_rng"] }
+rand = { version = "0.10.0-rc.1", features = ["small_rng"] }
 
 [dev-dependencies.serde_test]
 version = "1.0"
