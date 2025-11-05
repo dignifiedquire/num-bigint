@@ -13,10 +13,13 @@ name = "num-bigint-dig"
 repository = "https://github.com/dignifiedquire/num-bigint"
 version = "0.8.5"
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.65"
 readme = "README.md"
 build = "build.rs"
 autobenches = false
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(has_i128)'] }
 
 [package.metadata.docs.rs]
 features = ["std", "serde", "rand", "prime"]

@@ -10,7 +10,7 @@ extern crate rand_xorshift;
 mod biguint {
     use crate::num_bigint::{BigUint, RandBigInt, RandomBits};
     use num_traits::Zero;
-    use rand::distr::{Uniform, uniform};
+    use rand::distr::{uniform, Uniform};
     use rand::{Rng, SeedableRng};
 
     #[cfg(feature = "std")]
@@ -226,7 +226,7 @@ mod biguint {
 mod bigint {
     use crate::num_bigint::{BigInt, RandBigInt, RandomBits};
     use num_traits::Zero;
-    use rand::distr::{Uniform, uniform};
+    use rand::distr::{uniform, Uniform};
     use rand::{Rng, SeedableRng};
 
     #[cfg(feature = "std")]

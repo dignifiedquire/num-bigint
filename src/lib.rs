@@ -79,7 +79,7 @@
 //!
 //! ## Compatibility
 //!
-//! The `num-bigint-dig` crate is tested for rustc 1.60 and greater.
+//! The `num-bigint-dig` crate is tested for rustc 1.65 and greater.
 //!
 //! ## `no_std` compatibility
 //!

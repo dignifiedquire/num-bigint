@@ -538,13 +538,8 @@ mod tests {
     ];
 
     // Test Cases from #51
-    const ISSUE_51: &'static [&'static str] = &[
-        "1579751",
-        "1884791",
-        "3818929",
-        "4080359",
-        "4145951",
-    ];
+    const ISSUE_51: &'static [&'static str] =
+        &["1579751", "1884791", "3818929", "4080359", "4145951"];
 
     #[test]
     fn test_primes() {

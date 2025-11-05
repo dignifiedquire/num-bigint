@@ -2,7 +2,7 @@
 
 [![crate](https://img.shields.io/crates/v/num-bigint-dig.svg)](https://crates.io/crates/num-bigint-dig)
 [![documentation](https://docs.rs/num-bigint-dig/badge.svg)](https://docs.rs/num-bigint-dig)
-![minimum rustc 1.60](https://img.shields.io/badge/rustc-1.60+-red.svg)
+![minimum rustc 1.65](https://img.shields.io/badge/rustc-1.65+-red.svg)
 [![Travis status](https://travis-ci.org/dignifiedquire/num-bigint.svg?branch=master)](https://travis-ci.org/dignifiedquire/num-bigint)
 
 Big integer types for Rust, `BigInt` and `BigUint`.
@@ -16,7 +16,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-num-bigint-dig = "^0.7"
+num-bigint-dig = "0.8"
 ```
 
 and this to your crate root:
@@ -50,7 +50,7 @@ Release notes are available in [RELEASES.md](RELEASES.md).
 
 ## Compatibility
 
-The `num-bigint` crate is tested for rustc 1.60 and greater.
+The `num-bigint` crate is tested for rustc 1.65 and greater.
 
 ## Alternatives
 
@@ -60,7 +60,7 @@ table offers a brief comparison to a few alternatives.
 
 | Crate                | License        | Min rustc | Implementation |
 | :------------------- | :------------- |:----------| :------------- |
-| **`num-bigint-dig`** | MIT/Apache-2.0 | 1.60      | pure rust |
+| **`num-bigint-dig`** | MIT/Apache-2.0 | 1.65      | pure rust |
 | [`num-bigint`]       | MIT/Apache-2.0 | 1.15      | pure rust |
 | [`ramp`]             | Apache-2.0     | nightly   | rust and inline assembly |
 | [`rug`]              | LGPL-3.0+      | 1.18      | bundles [GMP] via [`gmp-mpfr-sys`] |

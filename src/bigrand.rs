@@ -160,7 +160,11 @@ impl UniformSampler for UniformBigUint {
     }
 
     #[inline]
-    fn sample_single<R: Rng + ?Sized, B1, B2>(low_b: B1, high_b: B2, rng: &mut R) -> Result<Self::X, uniform::Error>
+    fn sample_single<R: Rng + ?Sized, B1, B2>(
+        low_b: B1,
+        high_b: B2,
+        rng: &mut R,
+    ) -> Result<Self::X, uniform::Error>
     where
         B1: SampleBorrow<Self::X> + Sized,
         B2: SampleBorrow<Self::X> + Sized,
@@ -221,7 +225,11 @@ impl UniformSampler for UniformBigInt {
     }
 
     #[inline]
-    fn sample_single<R: Rng + ?Sized, B1, B2>(low_b: B1, high_b: B2, rng: &mut R) -> Result<Self::X, uniform::Error>
+    fn sample_single<R: Rng + ?Sized, B1, B2>(
+        low_b: B1,
+        high_b: B2,
+        rng: &mut R,
+    ) -> Result<Self::X, uniform::Error>
     where
         B1: SampleBorrow<Self::X> + Sized,
         B2: SampleBorrow<Self::X> + Sized,
@@ -302,7 +310,8 @@ const SMALL_PRIMES: [u8; 15] = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,
 /// coprime to all the elements of SMALL_PRIMES without further BigUint
 /// operations.
 #[cfg(feature = "prime")]
-static SMALL_PRIMES_PRODUCT: Lazy<BigUint> = Lazy::new(|| BigUint::from_u64(16_294_579_238_595_022_365).unwrap());
+static SMALL_PRIMES_PRODUCT: Lazy<BigUint> =
+    Lazy::new(|| BigUint::from_u64(16_294_579_238_595_022_365).unwrap());
 
 #[cfg(feature = "prime")]
 impl<R: Rng + ?Sized> RandPrime for R {
