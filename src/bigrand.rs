@@ -1,6 +1,5 @@
 //! Randomization of big integers
 
-use alloc::vec;
 use rand::distr::uniform::{self, SampleBorrow, SampleUniform, UniformSampler};
 use rand::prelude::*;
 use rand::Rng;
@@ -326,7 +325,7 @@ impl<R: Rng + ?Sized> RandPrime for R {
         }
 
         let bytes_len = (bit_size + 7) / 8;
-        let mut bytes = vec![0u8; bytes_len];
+        let mut bytes = alloc::vec![0u8; bytes_len];
 
         loop {
             self.fill_bytes(&mut bytes);
