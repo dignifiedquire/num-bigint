@@ -1,9 +1,8 @@
 //! Randomization of big integers
 
-use alloc::vec;
+use rand::Rng;
 use rand::distributions::uniform::{SampleBorrow, SampleUniform, UniformSampler};
 use rand::prelude::*;
-use rand::Rng;
 
 use crate::BigInt;
 use crate::BigUint;
@@ -69,12 +68,12 @@ impl<R: Rng + ?Sized> RandBigInt for R {
                 // again with probability 0.5. This is because otherwise,
                 // the probability of generating a zero BigInt would be
                 // double that of any other number.
-                if self.gen() {
+                if self.r#gen() {
                     continue;
                 } else {
                     NoSign
                 }
-            } else if self.gen() {
+            } else if self.r#gen() {
                 Plus
             } else {
                 Minus
@@ -317,7 +316,7 @@ impl<R: Rng + ?Sized> RandPrime for R {
         }
 
         let bytes_len = (bit_size + 7) / 8;
-        let mut bytes = vec![0u8; bytes_len];
+        let mut bytes = alloc::vec![0u8; bytes_len];
 
         loop {
             self.fill_bytes(&mut bytes);
